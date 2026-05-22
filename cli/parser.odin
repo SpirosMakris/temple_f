@@ -102,7 +102,7 @@ parser_init_bytes :: proc(p: ^Parser, source: []byte, allocator := context.alloc
 }
 
 parser_init_str :: proc(p: ^Parser, source: string, allocator := context.allocator) {
-	parser_init_bytes(p, transmute([]byte)source)
+	parser_init_bytes(p, transmute([]byte)source, allocator)
 }
 
 parser_init :: proc {
