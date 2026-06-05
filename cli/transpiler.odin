@@ -147,6 +147,9 @@ transpile_output :: proc(t: ^Transpiler, node: ^Node_Output) {
 		fmt.wprintf(t.w, "%s.write_f32(", PKG_IO)
 	case strings.has_prefix(v, "f64("):
 		fmt.wprintf(t.w, "%s.write_f64(", PKG_IO)
+	case strings.has_prefix(v, "raw("):
+		fmt.wprintf(t.w, "%s.write_string(", PKG_IO)
+		v = v[4:len(v)-1]
 	case:
 		ws(t.w, "__temple_write_escaped_string(")
 	}
@@ -155,6 +158,7 @@ transpile_output :: proc(t: ^Transpiler, node: ^Node_Output) {
 	ws(t.w, ", ")
 
 	ws(t.w, v)
+
 	ws(t.w, ") or_return")
 	transpile_loc(t, node.open.pos)
 }
