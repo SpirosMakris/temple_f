@@ -613,6 +613,27 @@ transpile_test_if_else_branches :: proc(t: ^testing.T) {
 	testing.expect(t, strings.contains(output, "write_string"), "expected write_string calls")
 }
 
+@(test)
+transpile_test_output_raw_cast :: proc(t: ^testing.T) {
+	defer free_all(context.temp_allocator)
+
+	p: Parser
+	parser_init(&p, "{{ raw(this.html) }}", context.temp_allocator)
+	templ := parse(&p)
+
+	b: strings.Builder
+	strings.builder_init(&b, context.temp_allocator)
+	w := strings.to_writer(&b)
+
+	transpile(w, "test", templ, nil_embed_parser, nil)
+
+	output := strings.to_string(b)
+	testing.expect(t, strings.contains(output, "write_string"), "expected write_string for raw() cast")
+	testing.expect(t, !strings.contains(output, "__temple_write_escaped_string"), "raw() should NOT use escaped write")
+	testing.expect(t, strings.contains(output, "this.html"), "expected inner expression in output")
+	testing.expect(t, !strings.contains(output, "raw("), "raw() wrapper should be stripped from output")
+}
+
 // ─── Integration: Lexer → Parser → Transpiler ──────────────────────────────
 
 @(test)
